@@ -1,0 +1,9 @@
+streamlit
+groq
+openai
+python-dotenv
+pypdf
+fastembed
+numpy
+pandas
+requests

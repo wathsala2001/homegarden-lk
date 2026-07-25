@@ -1,0 +1,22 @@
+# Private API keys
+.env
+.streamlit/secrets.toml
+
+# Python virtual environment
+venv/
+.venv/
+
+# Python temporary files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Generated RAG data
+data/vector_store/
+data/processed/
+
+# VS Code and Windows files
+.vscode/
+.DS_Store
+Thumbs.db

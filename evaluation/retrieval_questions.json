@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "question": "How often should I water tomato plants?",
+    "expected_keywords": ["tomato", "water", "watering"]
+  },
+  {
+    "id": 2,
+    "question": "How can I prepare compost at home?",
+    "expected_keywords": ["compost", "organic waste", "kitchen waste"]
+  },
+  {
+    "id": 3,
+    "question": "What fertiliser is suitable for chilli plants?",
+    "expected_keywords": ["chilli", "fertiliser", "nutrient"]
+  },
+  {
+    "id": 4,
+    "question": "How can I control vegetable pests naturally?",
+    "expected_keywords": ["pest", "natural", "control"]
+  },
+  {
+    "id": 5,
+    "question": "Why are brinjal leaves turning yellow?",
+    "expected_keywords": ["brinjal", "yellow", "disease"]
+  }
+]

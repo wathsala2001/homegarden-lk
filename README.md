@@ -6,6 +6,7 @@
 **Index Number:** ITBIN-2312-0025  
 **Module:** IT41043 – Intelligent Systems (Agentic AI)  
 **GitHub Repository:** https://github.com/wathsala2001/homegarden-lk  
+**Live Application:** https://homegarden-lk-wathsala.streamlit.app  
 **Retrieval Success Rate:** 80.0%
 
 ---

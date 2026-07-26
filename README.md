@@ -2,227 +2,481 @@
 
 ## Agentic AI Home Gardening Assistant for Sri Lankan Households
 
+HomeGarden LK is an Agentic AI application developed to help Sri Lankan households find simple and document-supported home-gardening information.
+
+The system searches a domain-specific collection of gardening documents and uses specialised AI agents to plan, retrieve, generate and review the final answer.
+
 **Student Name:** Wathsala Kithulgala  
 **Index Number:** ITBIN-2312-0025  
 **Module:** IT41043 – Intelligent Systems (Agentic AI)  
-**GitHub Repository:** https://github.com/wathsala2001/homegarden-lk  
-**Live Application:** https://homegarden-lk-wathsala.streamlit.app  
+**Documents:** 26 gardening documents  
+**GitHub Repository:** `https://github.com/wathsala2001/homegarden-lk`  
+**Live Application:** `https://homegarden-lk-wathsala.streamlit.app`  
 **Retrieval Success Rate:** 80.0%
 
 ---
 
-## 1. Project Introduction
+## Problem
 
-HomeGarden LK is an Agentic AI home-gardening assistant developed for Sri Lankan households.
+Home gardeners often need information about watering, planting, fertiliser, soil preparation, pest control and plant diseases.
 
-The system helps users ask questions about common gardening topics such as:
+This information may be spread across many different gardening documents. It can take a user a long time to find the correct document and page.
 
-- Plant watering
-- Fertiliser use
-- Compost preparation
-- Pest control
-- Plant diseases
-- Vegetable cultivation
+HomeGarden LK supports this process by:
 
-The system does not only depend on the general knowledge of an AI model. It retrieves information from a collection of gardening documents before preparing the answer.
+- Understanding the gardening question
+- Planning suitable searches
+- Retrieving relevant document sections
+- Ranking the evidence
+- Creating a simple answer
+- Checking the answer before showing it
+- Displaying the document sources and page numbers
 
----
-
-## 2. Main Objective
-
-The main objective of this project is to develop an Agentic AI system that can provide useful and document-supported home-gardening guidance.
-
-The system uses multiple agents, different AI models and a Retrieval-Augmented Generation process.
+The system is not designed as a general-purpose chatbot. It mainly answers questions using the selected gardening knowledge base.
 
 ---
 
-## 3. Target Users
+## Main Features
 
-The main users of HomeGarden LK are:
-
-- Sri Lankan home gardeners
-- Beginner gardeners
-- People growing vegetables in small gardens
-- People growing plants in containers
-- Households looking for simple gardening guidance
-
----
-
-## 4. Main Features
-
-HomeGarden LK includes:
-
+- Domain-specific home-gardening knowledge base
+- 26 gardening PDF documents
 - Three communicating AI agents
 - Three different AI model roles
-- Four agentic design patterns
-- Structured JSON communication
-- RAG using more than 20 gardening documents
+- Gardening-question classification
+- Planning and task decomposition
 - Semantic document retrieval
 - AI-based evidence ranking
-- Answer checking and revision
-- Source-supported responses
+- Source-supported answer generation
+- Reflection and answer revision
+- Structured agent-to-agent communication
+- Document names and page numbers
 - Streamlit user interface
 - Retrieval evaluation
+- Live cloud deployment
 
 ---
 
-## 5. AI Agents
+## System Architecture
 
-### Agent 1 – Query Planner Agent
+```mermaid
+flowchart LR
+    U[Home Gardener] --> UI[Streamlit Interface]
 
-The Query Planner Agent receives the user’s question.
+    UI --> O[Workflow Orchestrator]
 
-It identifies the question category and prepares a search plan. It also creates suitable search queries for the Retrieval Agent.
+    O --> A1[Query Planner Agent]
+    A1 --> M1[Model 1<br/>Llama 3.1 8B Instant]
 
-Example categories include watering, fertiliser, pests, diseases and cultivation.
+    A1 -->|Plan and search queries| A2[Knowledge Retrieval Agent]
 
-### Agent 2 – Retrieval Agent
+    A2 --> KB[Gardening Knowledge Base]
+    KB --> PDF[26 PDF Documents]
+    PDF --> CH[Text Chunks]
+    CH --> EMB[FastEmbed Embeddings]
+    EMB --> VS[NumPy Vector Store]
 
-The Retrieval Agent searches the gardening knowledge base.
+    A2 --> M2[Model 2<br/>GPT-OSS 20B]
 
-It retrieves related document chunks and uses an AI model to rank them according to their relevance to the user’s question.
+    A2 -->|Ranked evidence| A3[Answer and Review Agent]
+    A3 --> M3[Model 3<br/>GPT-OSS 120B]
 
-### Agent 3 – Answer and Review Agent
+    A3 -->|Final answer and sources| O
+    O --> UI
+    UI --> U
+```
 
-The Answer and Review Agent prepares the final answer using the retrieved evidence.
+The system architecture is also available in:
 
-It also checks whether the answer is supported by the documents. When the answer is incomplete or unsupported, the agent can revise it.
-
----
-
-## 6. AI Models
-
-The project uses three model roles:
-
-| Model Role | Model | Main Task |
-|---|---|---|
-| Router and Planner | `llama-3.1-8b-instant` | Understand the question and prepare a plan |
-| Evidence Ranker | `openai/gpt-oss-20b` | Rank retrieved gardening information |
-| Final Answer Model | `openai/gpt-oss-120b` | Generate and review the final answer |
-
-Each model is assigned a different task in the system.
-
----
-
-## 7. Agentic AI Patterns
-
-The project uses four Agentic AI patterns.
-
-### 1. Routing
-
-The system identifies the type of gardening question and sends it through the correct workflow.
-
-### 2. Planning
-
-The Query Planner Agent creates a plan and search queries before document retrieval begins.
-
-### 3. ReAct
-
-The system performs actions such as document searching and observes the retrieved results before continuing.
-
-### 4. Reflection
-
-The Answer and Review Agent checks whether the generated answer is supported by the retrieved documents. It revises the answer when required.
+```text
+diagrams/system_architecture.md
+```
 
 ---
 
-## 8. RAG Knowledge Base
+## AI Agents
 
-The project uses Retrieval-Augmented Generation.
+### 1. Query Planner Agent
 
-The knowledge base contains more than 20 gardening PDF documents. The documents cover home-gardening topics such as vegetable cultivation, compost, pests, fertiliser, watering and plant diseases.
+The Query Planner Agent receives the user’s gardening question.
 
-The main RAG process is:
+It performs the following tasks:
 
-1. Load the PDF documents.
-2. Extract the text.
-3. Divide the text into smaller chunks.
-4. Create embeddings using FastEmbed.
-5. Store the embeddings in a NumPy vector store.
-6. Convert the user’s question into an embedding.
-7. Find the most similar document chunks.
-8. Rank the retrieved evidence.
-9. Generate an answer using the evidence.
+- Identifies the plant
+- Classifies the question type
+- Selects the correct gardening area
+- Creates a search plan
+- Creates suitable search queries
+
+Example question types include:
+
+- Planting
+- Watering
+- Fertiliser
+- Soil preparation
+- Pest control
+- Plant diseases
+- Composting
+- Harvesting
+
+The faster model is used because classification and short planning do not require the strongest model.
 
 ---
 
-## 9. Structured Agent Communication
+### 2. Knowledge Retrieval Agent
 
-The agents communicate using a structured shared state.
+The Knowledge Retrieval Agent searches the gardening knowledge base.
 
-The shared state contains information such as:
+It performs the following tasks:
+
+- Converts search queries into embeddings
+- Searches the NumPy vector store
+- Retrieves related document chunks
+- Removes repeated results
+- Uses Model 2 to rank the evidence
+- Selects the most useful document information
+- Records document names and page numbers
+
+This agent follows the ReAct and Tool-Use pattern because it performs a search action and observes the retrieved results.
+
+---
+
+### 3. Answer and Review Agent
+
+The Answer and Review Agent uses the strongest model.
+
+It performs three main tasks:
+
+1. Generates the first answer using retrieved evidence
+2. Reviews the answer against the evidence
+3. Revises the answer when a problem is found
+
+The review checks whether the answer:
+
+- Uses retrieved evidence
+- Answers the user’s question
+- Avoids unsupported claims
+- Uses simple English
+- Includes safety advice when required
+- Includes document sources
+
+---
+
+## Orchestrator
+
+The Orchestrator controls the complete workflow.
+
+It runs the agents in this order:
+
+1. Query Planner Agent
+2. Knowledge Retrieval Agent
+3. Answer and Review Agent
+
+It also:
+
+- Creates the initial structured state
+- Passes information between the agents
+- Stops the workflow when an error occurs
+- Records the workflow status
+- Returns the final answer to the Streamlit interface
+
+---
+
+## Agentic Design Patterns
+
+### 1. Routing Pattern
+
+The Query Planner Agent classifies the gardening question.
+
+For example:
+
+```text
+How often should I water tomato plants?
+```
+
+The system identifies:
+
+```text
+Plant: Tomato
+Question type: Watering
+```
+
+---
+
+### 2. Planning and Task-Decomposition Pattern
+
+The Query Planner Agent divides the question into smaller tasks.
+
+Example:
+
+```text
+1. Identify the plant.
+2. Identify the gardening problem.
+3. Create search queries.
+4. Retrieve document evidence.
+5. Prepare and review the answer.
+```
+
+---
+
+### 3. ReAct and Tool-Use Pattern
+
+The Knowledge Retrieval Agent uses the RAG search system as a tool.
+
+The process is:
+
+```text
+Reason → Search → Observe results → Rank evidence
+```
+
+The agent can compare retrieved results before passing them to the final agent.
+
+---
+
+### 4. Reflection Pattern
+
+The Answer and Review Agent checks its first answer.
+
+If the answer is unsupported, unclear or incomplete, the system asks Model 3 to revise it.
+
+The final workflow status can be:
+
+```text
+answer_complete
+answer_needs_revision
+insufficient_evidence
+error
+```
+
+---
+
+## Agent Communication Protocol
+
+The agents communicate through a structured shared state.
+
+The structured state contains:
+
+- Request ID
+- User question
+- Plant
+- Question type
+- Language
+- Search plan
+- Search queries
+- Retrieved chunks
+- Ranked evidence
+- Draft answer
+- Reflection result
+- Final answer
+- Sources
+- Workflow status
+- Error information
+
+Example:
 
 ```json
 {
+  "request_id": "REQ-12AB34CD",
   "user_question": "How often should I water tomato plants?",
-  "category": "watering",
+  "plant": "tomato",
+  "question_type": "watering",
+  "language": "English",
+  "plan": [
+    "Identify the watering requirement",
+    "Search the gardening knowledge base",
+    "Rank the retrieved evidence",
+    "Prepare and review the answer"
+  ],
   "search_queries": [
     "tomato plant watering frequency",
-    "watering tomato plants in home gardens"
+    "watering tomatoes in home gardens"
   ],
-  "retrieved_documents": [],
+  "retrieved_chunks": [],
   "ranked_evidence": [],
+  "draft_answer": "",
+  "reflection": {
+    "supported_by_sources": false,
+    "answers_question": false,
+    "has_sources": false,
+    "needs_revision": false,
+    "comments": ""
+  },
   "final_answer": "",
   "sources": [],
-  "status": "processing",
+  "status": "created",
   "error": null
 }
 ```
 
-Structured messages help the agents share information clearly and reduce communication errors.
-
 ---
 
-## 10. System Architecture
+## Agent Communication Sequence
 
-The system architecture diagram is available here:
+```mermaid
+sequenceDiagram
+    actor User as Home Gardener
+    participant UI as Streamlit UI
+    participant O as Orchestrator
+    participant P as Query Planner
+    participant R as Retrieval Agent
+    participant KB as RAG Knowledge Base
+    participant A as Answer and Review Agent
 
-[View System Architecture](diagrams/system_architecture.md)
+    User->>UI: Enter gardening question
+    UI->>O: Start workflow
 
-The main workflow is:
+    O->>P: Send user question
+    P->>P: Classify and create plan
+    P-->>O: Return plan and search queries
+
+    O->>R: Send search queries
+    R->>KB: Search vector store
+    KB-->>R: Return document chunks
+    R->>R: Rank retrieved evidence
+    R-->>O: Return evidence and sources
+
+    O->>A: Send question and evidence
+    A->>A: Generate draft answer
+    A->>A: Review answer
+
+    alt Revision required
+        A->>A: Revise answer
+        A->>A: Review revised answer
+    end
+
+    A-->>O: Return final answer
+    O-->>UI: Answer, workflow and sources
+    UI-->>User: Display final result
+```
+
+The communication sequence is also available in:
 
 ```text
-User
-  ↓
-Streamlit Interface
-  ↓
-Query Planner Agent
-  ↓
-Retrieval Agent
-  ↓
-RAG Knowledge Base
-  ↓
-Answer and Review Agent
-  ↓
-Final Answer with Sources
+diagrams/agent_communication.md
 ```
 
 ---
 
-## 11. Agent Communication
+## Model Selection Strategy
 
-The agent communication diagram is available here:
+Three AI models are assigned to different tasks.
 
-[View Agent Communication Diagram](diagrams/agent_communication.md)
+| Sub-task | Model | Main reason |
+|---|---|---|
+| Routing and planning | `llama-3.1-8b-instant` | Fast and suitable for classification and short planning |
+| Evidence ranking | `openai/gpt-oss-20b` | Suitable for checking and ranking retrieved document evidence |
+| Answer generation and reflection | `openai/gpt-oss-120b` | Stronger model for generating, reviewing and revising the final answer |
 
-The agents communicate in the following order:
-
-1. The user submits a gardening question.
-2. The Query Planner Agent identifies the category.
-3. The Query Planner Agent prepares search queries.
-4. The Retrieval Agent searches the knowledge base.
-5. The Retrieval Agent ranks the retrieved evidence.
-6. The Answer and Review Agent generates the answer.
-7. The answer is checked and revised when required.
-8. The final answer and sources are shown to the user.
+This design avoids using the strongest model for every task.
 
 ---
 
-## 12. Retrieval Evaluation
+## RAG Pipeline
 
-I tested the retrieval system using five sample gardening questions.
+The Retrieval-Augmented Generation pipeline follows these steps:
 
-The questions covered topics such as:
+1. Load the gardening PDF documents.
+2. Extract readable text from each document.
+3. Divide the text into smaller overlapping chunks.
+4. Add source names and page numbers as metadata.
+5. Generate embeddings for each text chunk.
+6. Store the embeddings in a NumPy vector store.
+7. Convert the user’s search query into an embedding.
+8. Compare the query with the stored vectors.
+9. Retrieve the most similar document chunks.
+10. Use Model 2 to rank the evidence.
+11. Send the strongest evidence to Model 3.
+12. Generate and review the final answer.
+
+---
+
+## Knowledge Base
+
+- **Domain:** Home gardening
+- **Target users:** Sri Lankan households and beginner gardeners
+- **Number of documents:** 26
+- **Document type:** Gardening PDF documents
+- **Main areas:**
+  - Home-gardening basics
+  - Soil preparation
+  - Compost preparation
+  - Tomato cultivation
+  - Brinjal cultivation
+  - Okra cultivation
+  - Cucumber cultivation
+  - Bean cultivation
+  - Container gardening
+  - Water management
+  - Vegetable pests
+  - Plant diseases
+  - Seed selection
+  - Nursery management
+  - Urban home gardening
+  - Leafy vegetable cultivation
+
+---
+
+## Document Processing
+
+The PDF processing component:
+
+- Reads PDF files using PyPDF
+- Extracts text page by page
+- Removes empty pages
+- Stores the document filename
+- Stores the page number
+- Divides long text into smaller chunks
+- Preserves overlap between neighbouring chunks
+
+The overlap helps preserve information located near the boundary of two chunks.
+
+---
+
+## Embedding Model
+
+The system uses:
+
+```text
+BAAI/bge-small-en-v1.5
+```
+
+The model is loaded using FastEmbed.
+
+It converts:
+
+- Gardening document chunks
+- User search queries
+
+into numerical semantic vectors.
+
+---
+
+## Vector Store
+
+The project uses a NumPy vector store.
+
+The stored files are:
+
+```text
+data/vector_store/embeddings.npy
+data/vector_store/metadata.json
+```
+
+`embeddings.npy` contains the numerical vectors.
+
+`metadata.json` contains:
+
+- Document names
+- Page numbers
+- Original chunk text
+- Other retrieval information
+
+---
+
+## Retrieval Evaluation
+
+The retrieval system was tested using five gardening questions.
+
+The evaluation topics included:
 
 - Tomato watering
 - Chilli fertiliser
@@ -230,51 +484,49 @@ The questions covered topics such as:
 - Natural pest control
 - Brinjal leaf problems
 
-Four out of the five questions retrieved relevant gardening information.
+Results:
 
-**Retrieval Success Rate: 80.0%**
+```text
+Total questions: 5
+Relevant retrievals: 4
+Unsuccessful retrievals: 1
+Retrieval success rate: 80.0%
+```
 
-This result shows that the knowledge base can retrieve useful information for most common home-gardening questions. However, retrieval can still be improved for questions that use unclear or different wording.
+Detailed evaluation files:
 
-Detailed results are available in:
+```text
+evaluation/retrieval_questions.json
+evaluation/retrieval_results.csv
+evaluation/retrieval_summary.md
+```
 
-- `evaluation/retrieval_results.csv`
-- `evaluation/retrieval_summary.md`
-
----
-
-## 13. Technologies Used
-
-- Python
-- Streamlit
-- Groq API
-- FastEmbed
-- NumPy
-- PyPDF
-- Pandas
-- JSON
-- Git
-- GitHub
-- Visual Studio Code
+The evaluation shows that the system retrieves useful information for most common gardening questions. Retrieval can still be improved for unclear or differently worded questions.
 
 ---
 
-## 14. Project Folder Structure
+## Project Structure
 
 ```text
 homegarden-lk/
 │
 ├── agents/
+│   ├── __init__.py
 │   ├── query_planner_agent.py
 │   ├── retrieval_agent.py
 │   └── answer_review_agent.py
 │
 ├── core/
-│   └── orchestrator.py
+│   ├── __init__.py
+│   ├── orchestrator.py
+│   ├── prompts.py
+│   └── state.py
 │
 ├── data/
 │   ├── raw_documents/
 │   └── vector_store/
+│       ├── embeddings.npy
+│       └── metadata.json
 │
 ├── diagrams/
 │   ├── system_architecture.md
@@ -287,9 +539,11 @@ homegarden-lk/
 │   └── retrieval_summary.md
 │
 ├── models/
+│   ├── __init__.py
 │   └── model_manager.py
 │
 ├── rag/
+│   ├── __init__.py
 │   ├── document_loader.py
 │   ├── text_chunker.py
 │   ├── embedding_manager.py
@@ -297,66 +551,67 @@ homegarden-lk/
 │   └── retriever.py
 │
 ├── scripts/
+│   ├── __init__.py
 │   └── build_index.py
 │
-├── app.py
-├── requirements.txt
+├── tests/
+├── utils/
 ├── .env.example
 ├── .gitignore
+├── app.py
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## 15. Installation
+## Local Installation
 
-### Step 1 – Clone the repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/wathsala2001/homegarden-lk.git
 cd homegarden-lk
 ```
 
-### Step 2 – Create a virtual environment
+### 2. Create a virtual environment
 
 ```bash
 python -m venv venv
 ```
 
-### Step 3 – Activate the virtual environment
-
-For Windows PowerShell:
+### 3. Activate it on Windows
 
 ```powershell
 venv\Scripts\Activate.ps1
 ```
 
-### Step 4 – Install the required libraries
+### 4. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Step 5 – Create the environment file
+### 5. Create the environment file
 
-Create a file named `.env` and add:
+Create a `.env` file:
 
 ```env
-GROQ_API_KEY=your_groq_api_key
+GROQ_API_KEY=your_private_groq_api_key
 ROUTER_MODEL=llama-3.1-8b-instant
 RERANK_MODEL=openai/gpt-oss-20b
 FINAL_MODEL=openai/gpt-oss-120b
 ```
 
-The real API key should not be uploaded to GitHub.
+Never upload the real `.env` file to GitHub.
 
-### Step 6 – Build the vector index
+### 6. Build the vector index
 
 ```bash
 python scripts/build_index.py
 ```
 
-### Step 7 – Run the application
+### 7. Run the Streamlit application
 
 ```bash
 python -m streamlit run app.py
@@ -364,74 +619,104 @@ python -m streamlit run app.py
 
 ---
 
-## 16. Example Question
+## Live Application
+
+Open the live HomeGarden LK application:
 
 ```text
-How often should I water tomato plants?
+https://homegarden-lk-wathsala.streamlit.app
 ```
 
-The system plans the search, retrieves relevant document information, ranks the evidence and generates an answer with sources.
+---
+
+## Deployment
+
+The application is deployed using Streamlit Community Cloud.
+
+- **Repository:** `wathsala2001/homegarden-lk`
+- **Deployment branch:** `main`
+- **Main file:** `app.py`
+- **Python version:** `3.12`
+- **Secret management:** Streamlit Community Cloud Secrets
+- **Public application:** `https://homegarden-lk-wathsala.streamlit.app`
 
 ---
 
-## 17. Challenges I Faced
+## Error Handling
 
-During the project, I faced several challenges.
+The system handles:
 
-One challenge was connecting three agents and passing information between them. I solved this by using a structured shared state.
+- Empty gardening questions
+- Missing Groq API key
+- Invalid API configuration
+- Missing vector-store files
+- No retrieved gardening evidence
+- Invalid JSON reflection response
+- Model API errors
+- Retrieval errors
+- General agent workflow failures
 
-I also faced difficulties when creating and loading the vector store. I tested each RAG component separately before connecting it to the full agent workflow.
+When an error occurs, the structured state records:
 
-Another challenge was ensuring that the generated answer was supported by the retrieved documents. I added a review and reflection process to check the answer before showing it to the user.
-
----
-
-## 18. What I Learned
-
-Through this project, I learned:
-
-- How Agentic AI systems work
-- How different agents communicate
-- How to assign different tasks to different AI models
-- How RAG retrieves information from documents
-- How embeddings and vector similarity work
-- How reflection can improve an AI-generated answer
-- How to use Git branches and Pull Requests
-- How to develop a Streamlit interface
+```json
+{
+  "status": "error",
+  "error": "Readable error description"
+}
+```
 
 ---
 
-## 19. Limitations
+## Known Limitations
 
-The current system has several limitations:
-
-- It mainly supports home-gardening questions.
-- The answer quality depends on the available documents.
-- Some questions may retrieve partly relevant documents.
-- An internet connection is required to access the AI models.
+- The answer quality depends on the selected gardening documents.
+- Some scanned PDF pages may not provide readable text.
+- The system mainly supports English questions.
+- Retrieval success is currently 80.0%.
+- Some unclear questions may retrieve partly related information.
+- An internet connection is required for the Groq models.
+- API availability and rate limits can affect response time.
 - The system does not replace professional agricultural advice.
-- The current retrieval success rate is 80.0%, so retrieval can still be improved.
+- The current system does not analyse plant images.
+- Weather information is not connected to the current version.
 
 ---
 
-## 20. Future Improvements
+## Future Improvements
 
-The project can be improved by:
-
-- Adding more Sri Lankan gardening documents
-- Supporting Sinhala and Tamil questions
-- Adding weather-based recommendations
-- Improving document metadata
-- Increasing the number of evaluation questions
-- Improving retrieval for unclear questions
-- Adding image-based plant disease identification
+- Add more Sri Lankan gardening documents
+- Support Sinhala and Tamil questions
+- Improve retrieval for unclear questions
+- Add local weather information
+- Add image-based plant disease identification
+- Increase the number of evaluation questions
+- Improve document metadata
+- Add user feedback for answer quality
 
 ---
 
-## 21. Conclusion
+## External Tools and Libraries
 
-HomeGarden LK is an Agentic AI home-gardening assistant developed for Sri Lankan households.
+- Python
+- Streamlit
+- Groq API
+- FastEmbed
+- BAAI embedding model
+- NumPy
+- Pandas
+- PyPDF
+- Python-dotenv
+- Git
+- GitHub
+- Streamlit Community Cloud
+- Visual Studio Code
 
-The system successfully combines three AI agents, three model roles, four agentic patterns, structured communication and a RAG knowledge base. It can retrieve gardening information, generate source-supported answers and review its own output before presenting the final response.
+---
 
-The project helped me understand how a complete Agentic AI system can be designed, built, tested and deployed.
+## Academic Integrity Declaration
+
+This project was developed for the IT41043 Intelligent Systems Agentic AI assignment.
+
+The external libraries, AI models, embedding model and deployment tools used in the project are disclosed in this README.
+
+I am responsible for understanding, explaining, testing and demonstrating the complete implementation during the project evaluation.

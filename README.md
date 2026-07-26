@@ -10,8 +10,8 @@ The system searches a domain-specific collection of gardening documents and uses
 **Index Number:** ITBIN-2312-0025  
 **Module:** IT41043 – Intelligent Systems (Agentic AI)  
 **Documents:** 26 gardening documents  
-**GitHub Repository:** `https://github.com/wathsala2001/homegarden-lk`  
-**Live Application:** `https://homegarden-lk-wathsala.streamlit.app`  
+**GitHub Repository:** [Open GitHub Repository](https://github.com/wathsala2001/homegarden-lk)  
+**Live Application:** [Open HomeGarden LK Application](https://homegarden-lk-wathsala.streamlit.app)  
 **Retrieval Success Rate:** 80.0%
 
 ---

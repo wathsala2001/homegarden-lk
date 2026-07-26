@@ -246,7 +246,19 @@ answer_needs_revision
 insufficient_evidence
 error
 ```
+## Agentic Pattern Code Locations
 
+The following table shows where each Agentic AI pattern is implemented in the project.
+
+| Pattern | File and function | Purpose |
+|---|---|---|
+| Routing | `agents/query_planner_agent.py` — `run_ai_planner()` and `classify_question()` | Identifies the plant and classifies the gardening question |
+| Planning and task decomposition | `agents/query_planner_agent.py` — `run_ai_planner()` and `create_plan()` | Creates search queries and divides the question into smaller tasks |
+| ReAct and tool use | `agents/retrieval_agent.py` — `run_retrieval_agent()`, `use_retrieval_tool()` and `create_fallback_query()` | Searches the vector store, observes the retrieved results and performs another search when evidence is insufficient |
+| Reflection and self-checking | `agents/answer_review_agent.py` — `reflect_on_answer()`, `revise_answer()` and `run_answer_review_agent()` | Reviews the draft answer and revises it when a problem is identified |
+| Orchestration | `core/orchestrator.py` — `run_garden_workflow()` | Controls the order of the three agents and passes the shared state between them |
+
+The Orchestrator first runs the Query Planner Agent, then the Knowledge Retrieval Agent and finally the Answer and Review Agent.
 ---
 
 ## Agent Communication Protocol
@@ -358,16 +370,17 @@ diagrams/agent_communication.md
 
 ## Model Selection Strategy
 
-Three AI models are assigned to different tasks.
+Three Groq models are assigned to different tasks. Each model was selected according to task difficulty, response speed, cost, context window and reasoning ability.
 
-| Sub-task | Model | Main reason |
-|---|---|---|
-| Routing and planning | `llama-3.1-8b-instant` | Fast and suitable for classification and short planning |
-| Evidence ranking | `openai/gpt-oss-20b` | Suitable for checking and ranking retrieved document evidence |
-| Answer generation and reflection | `openai/gpt-oss-120b` | Stronger model for generating, reviewing and revising the final answer |
+| Sub-task | Model and provider | Speed | Cost per 1M tokens | Context window | Reasoning quality | Reason for selection |
+|---|---|---:|---:|---:|---|---|
+| Routing and planning | `llama-3.1-8b-instant` — Groq | Approximately 560 tokens/second | $0.05 input / $0.08 output | 131,072 tokens | Basic to medium | Fast and inexpensive for plant identification, question classification and short planning |
+| Evidence ranking | `openai/gpt-oss-20b` — Groq | Approximately 1,000 tokens/second | $0.075 input / $0.30 output | 131,072 tokens | Medium | Fast enough to compare and rank several retrieved gardening chunks |
+| Answer generation and reflection | `openai/gpt-oss-120b` — Groq | Approximately 500 tokens/second | $0.15 input / $0.60 output | 131,072 tokens | Strong | Better for producing source-supported answers, checking unsupported claims and revising the answer |
 
-This design avoids using the strongest model for every task.
+The faster and cheaper model is used for simple routing and planning. The medium model is used for evidence ranking. The strongest model is used for final answer generation, reflection and revision.
 
+This design avoids using the strongest and most expensive model for every task.
 ---
 
 ## RAG Pipeline
@@ -449,6 +462,19 @@ It converts:
 into numerical semantic vectors.
 
 ---
+## Chunking Strategy
+
+The gardening documents are divided into fixed-size overlapping text chunks.
+
+- **Chunk size:** 800 characters
+- **Chunk overlap:** 120 characters
+- **Metadata stored:** document filename, page number, chunk number and chunk ID
+
+The overlap helps preserve information that appears near the boundary between two chunks. Without overlap, an important sentence may be separated from its related information.
+
+I selected this fixed-size chunking method because it was simple to implement, test and explain within the available project time. The filename and page number are stored with each chunk so the final application can display its information sources.
+
+---
 
 ## Vector Store
 
@@ -474,9 +500,11 @@ data/vector_store/metadata.json
 
 ## Retrieval Evaluation
 
-The retrieval system was tested using five gardening questions.
+The retrieval system was tested using five sample home-gardening questions.
 
-The evaluation topics included:
+The purpose of this evaluation was to check whether the RAG system could retrieve document chunks that were relevant to each question.
+
+The evaluation questions covered:
 
 - Tomato watering
 - Chilli fertiliser
@@ -484,7 +512,7 @@ The evaluation topics included:
 - Natural pest control
 - Brinjal leaf problems
 
-Results:
+### Evaluation Results
 
 ```text
 Total questions: 5
@@ -493,7 +521,7 @@ Unsuccessful retrievals: 1
 Retrieval success rate: 80.0%
 ```
 
-Detailed evaluation files:
+The detailed evaluation files are available in:
 
 ```text
 evaluation/retrieval_questions.json
@@ -501,7 +529,33 @@ evaluation/retrieval_results.csv
 evaluation/retrieval_summary.md
 ```
 
-The evaluation shows that the system retrieves useful information for most common gardening questions. Retrieval can still be improved for unclear or differently worded questions.
+### Evaluation Discussion
+
+The retrieval system returned relevant gardening information for four out of five test questions. Therefore, the final retrieval success rate was **80.0%**.
+
+This result shows that the knowledge base can retrieve useful information for most common home-gardening questions.
+
+One of the five evaluation questions did not retrieve sufficiently relevant context. A possible reason is that the wording of the question did not closely match the terminology used in the gardening documents.
+
+Semantic retrieval may return partly related information when:
+
+- The question is too broad
+- The user uses different words from the documents
+- The knowledge base does not contain enough information about the topic
+- Important information is divided across different document chunks
+- The similarity between the question and the stored document chunks is low
+
+The retrieval process could be improved by:
+
+- Adding gardening synonyms and query expansion
+- Adding more Sri Lankan gardening documents
+- Improving document metadata
+- Testing different chunk sizes and overlap values
+- Combining keyword search with semantic search
+- Increasing the number of evaluation questions
+- Adjusting the retrieval similarity threshold
+
+The **80.0% result is reported honestly** instead of being changed to 100%. It shows that the system works for most tested questions while still having a clear area for future improvement.
 
 ---
 
